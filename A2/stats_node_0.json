@@ -3,10 +3,10 @@
     "host": "192.168.188.81",
     "port": 10000,
     "rounds": 10,
-    "fireworks": 4,
+    "fireworks": 3,
     "silent_rounds_until_stop": 5,
-    "timestamp": "2025-05-10 10:04:58",
-    "min_round_time": 0.0024983882904052734,
-    "max_round_time": 0.07506394386291504,
-    "avg_round_time": 0.010608220100402832
+    "timestamp": "2025-05-10 10:12:54",
+    "min_round_time": 0.007581233978271484,
+    "max_round_time": 0.11085796356201172,
+    "avg_round_time": 0.030416464805603026
 }
