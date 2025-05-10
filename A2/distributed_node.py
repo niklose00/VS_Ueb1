@@ -80,3 +80,14 @@ def run_node(my_id, peer_config_path, p_init, k):
         sock.sendto(json.dumps(token).encode(), (next_peer['host'], next_peer['port']))
 
     print(f"[Node {my_id}] Beendet. Runden: {round_num}, Feuerwerke: {firework_count}")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--id", type=int, required=True, help="ID des Knotens laut peers.json")
+    parser.add_argument("--config", type=str, required=True, help="Pfad zur peers.json")
+    parser.add_argument("--p", type=float, required=True, help="Initiale Wahrscheinlichkeit p")
+    parser.add_argument("--k", type=int, required=True, help="Anzahl stiller Runden für Terminierung")
+    args = parser.parse_args()
+
+    run_node(args.id, args.config, args.p, args.k)
