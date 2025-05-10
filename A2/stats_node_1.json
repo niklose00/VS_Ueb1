@@ -1,0 +1,12 @@
+{
+    "id": 1,
+    "host": "192.168.188.48",
+    "port": 10001,
+    "rounds": 10,
+    "fireworks": 2,
+    "silent_rounds_until_stop": 0,
+    "timestamp": "2025-05-10 10:13:01",
+    "min_round_time": 0.008717536926269531,
+    "max_round_time": 1.425229549407959,
+    "avg_round_time": 0.1617903232574463
+}
