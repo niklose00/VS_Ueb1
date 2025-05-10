@@ -1,0 +1,2 @@
+python distributed_node.py --id 0 --config peers.json --p 0.8 --k 5
+python distributed_node.py --id 1 --config peers.json --p 0.8 --k 5
