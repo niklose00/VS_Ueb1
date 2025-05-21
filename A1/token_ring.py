@@ -9,7 +9,7 @@ from select import select
 
 MCAST_GRP = '224.0.0.1'
 MCAST_PORT = 5007
-BASE_PORT = 20000  # erhöht
+BASE_PORT = 20000
 BUFFER_SIZE = 1024
 TOKEN_TIMEOUT = 5
 
@@ -17,7 +17,7 @@ def make_socket(port, multicast=False):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     try:
-        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)  # falls unterstützt
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
     except AttributeError:
         pass
     sock.bind(('127.0.0.1', port))
@@ -100,11 +100,11 @@ def run_ring(n, p, k):
     for i in range(n):
         proc = multiprocessing.Process(target=node_process, args=(i, n, p, k, stats_q))
         proc.start()
-        time.sleep(0.1)  # wichtig für Windows
+        time.sleep(0.1)
 
         procs.append(proc)
 
-    time.sleep(1.0)  # lass Prozesse binden, bevor Token geschickt wird
+    time.sleep(1.0)
 
     init_token = {'round': 0, 'p': p}
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
