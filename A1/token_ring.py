@@ -9,13 +9,17 @@ from select import select
 
 MCAST_GRP = '224.0.0.1'
 MCAST_PORT = 5007
-BASE_PORT = 10000
+BASE_PORT = 20000  # erhöht
 BUFFER_SIZE = 1024
-TOKEN_TIMEOUT = 2
+TOKEN_TIMEOUT = 5
 
 def make_socket(port, multicast=False):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    try:
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)  # falls unterstützt
+    except AttributeError:
+        pass
     sock.bind(('127.0.0.1', port))
     if multicast:
         mreq = struct.pack("=4sl", socket.inet_aton(MCAST_GRP), socket.INADDR_ANY)
@@ -41,14 +45,18 @@ def node_process(i, n, p_init, k, stats_q):
     silent_rounds = 0
     p = p_init
 
+    print(f"[{i}] Prozess gestartet. Warte auf Token an Port {recv_port}")
+
     while True:
         start = time.time()
         rlist, _, _ = select([recv_sock], [], [], TOKEN_TIMEOUT)
         if not rlist:
+            print(f"[{i}] Timeout – kein Token empfangen")
             break
 
         data, _ = recv_sock.recvfrom(BUFFER_SIZE)
         token = json.loads(data.decode())
+        print(f"[{i}] Token empfangen: {token}")
         token_rounds += 1
         launched = False
 
@@ -65,6 +73,7 @@ def node_process(i, n, p_init, k, stats_q):
             token['round'] += 1
             token['p'] /= 2
             if silent_rounds >= k:
+                print(f"[{i}] Terminierung nach {k} stillen Runden")
                 break
         else:
             token['p'] = p
@@ -86,13 +95,16 @@ def node_process(i, n, p_init, k, stats_q):
 
 def run_ring(n, p, k):
     stats_q = multiprocessing.Queue()
-    procs = [
-        multiprocessing.Process(target=node_process, args=(i, n, p, k, stats_q))
-        for i in range(n)
-    ]
+    procs = []
 
-    for proc in procs:
+    for i in range(n):
+        proc = multiprocessing.Process(target=node_process, args=(i, n, p, k, stats_q))
         proc.start()
+        time.sleep(0.1)  # wichtig für Windows
+
+        procs.append(proc)
+
+    time.sleep(1.0)  # lass Prozesse binden, bevor Token geschickt wird
 
     init_token = {'round': 0, 'p': p}
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
